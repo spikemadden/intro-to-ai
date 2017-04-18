@@ -8,6 +8,23 @@ class State(object):
 		self.canLeft = canLeft
 		self.boat = boat
 
+	# Checks for a valid state.
+	# If missionaries are present on a bank, then there cannot be more missionaries
+	def isValid():
+		valid = False
+		# if there are missionaries on the right, and there are more cannibals
+		if (self.misRight > 0) and (self.misRight < self.canRight):
+			valid = False
+		# if there are missionaries on the left, and there are more cannibals
+		elif (self.misleft > 0) and (self.misLeft < self.canLeft):
+			valid = False
+		# if any of the values are negative
+		elif self.misLeft < 0 or self.canLeft < 0 or slef.misRight < 0 or self.canRight < 0:
+			valid = False
+		else
+			valid = True
+
+
 def load_data(file):
 	left_bank = []
 	right_bank = []
