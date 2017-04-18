@@ -23,7 +23,7 @@ class State(object):
 			return False
 
 	def __hash__(self):
-		return id(self)
+		return hash((self.misLeft, self.misRight, self.canLeft, self.canRight, self.boat))
 
 	# Checks for a valid state.
 	# If missionaries are present on a bank, then there cannot be more missionaries
@@ -40,7 +40,7 @@ class State(object):
 			valid = False
 		else:
 			valid = True
-			print(self)
+			# print(self)
 
 		return valid
 
@@ -78,17 +78,14 @@ def breadth_first(initial_state, goal_state):
 	# push first node into queue
 	fringe.append(initial_state)
 	while(fringe):
-		# gets the first element in the fringe
+		# gets the FIRST element in the fringe
 		current_node = fringe.pop(0)
 		# check if current node is goal
-		print(current_node)
-		print(goal_state)
 		if (current_node == goal_state):
 			print("We found the goal")
 			path = solution(current_node, initial_state)
 			return path
 		if current_node not in visited:
-			print("adding to visited")
 			visited.add(current_node)
 
 			valid_children = expand(current_node)
@@ -97,10 +94,34 @@ def breadth_first(initial_state, goal_state):
 
 	return None
 
+def depth_first(initial_state, goal_state):
+	visited = set()
+	fringe = []
+	# push first node into queue
+	fringe.append(initial_state)
+	while(fringe):
+		# gets the LAST element in the fringe
+		current_node = fringe.pop()
+		# check if current node is goal
+		if (current_node == goal_state):
+			print("We found the goal")
+			path = solution(current_node, initial_state)
+			return path
+
+		if current_node not in visited:
+			visited.add(current_node)
+			
+			valid_children = expand(current_node)
+			valid_children = list(reversed(valid_children))
+			for state in valid_children:
+				fringe.append(state)
+
+	return None
+
 def expand(current):
 	valid_children = []
 	if (current.boat == 'right'):
-		print("expanding w/ boat on right")
+		# print("expanding w/ boat on right")
 		# move one missionary
 		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left', current)
 		if (child.isValid()):
@@ -122,7 +143,7 @@ def expand(current):
 		if (child.isValid()):
 			valid_children.append(child)
 	elif (current.boat == 'left'):
-		print("expanding w/ boat on left")
+		# print("expanding w/ boat on left")
 		# move one missionary
 		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right', current)
 		if (child.isValid()):
@@ -144,7 +165,6 @@ def expand(current):
 		if (child.isValid()):
 			valid_children.append(child)
 
-	# print(valid_children)
 	return valid_children
 
 def solution(finalState, initial):
@@ -184,6 +204,8 @@ def main(args):
 
 	if mode == "bfs":
 		solutionPath = breadth_first(initial, goal)
+	elif mode == "dfs":
+		solutionPath = depth_first(initial, goal)
 
 	if solutionPath != None:
 		for step in solutionPath:
