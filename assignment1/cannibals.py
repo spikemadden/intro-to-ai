@@ -1,13 +1,15 @@
 import sys
 
 class State(object):
-	def __init__(self, misRight, canRight, misLeft, canLeft, boat, parent):
+	def __init__(self, misRight, canRight, misLeft, canLeft, boat, parent, level):
 		self.misRight = misRight
 		self.canRight = canRight
 		self.misLeft = misLeft
 		self.canLeft = canLeft
 		self.parent = parent
 		self.boat = boat
+		self.level = level
+
 
 	def __repr__(self):
 		return "left bank: %s %s right bank: %s %s boat: %s" % (self.misLeft, self.canLeft, self.misRight, self.canRight, self.boat)
@@ -66,9 +68,9 @@ def load_data(file):
 
 	# check boat position and create state
 	if (right_bank[2] == 1):
-		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'right', None)
+		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'right', None, 0)
 	else:
-		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'left', None)
+		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'left', None, 0)
 
 	return state
 
@@ -110,7 +112,7 @@ def depth_first(initial_state, goal_state):
 
 		if current_node not in visited:
 			visited.add(current_node)
-			
+
 			valid_children = expand(current_node)
 			valid_children = list(reversed(valid_children))
 			for state in valid_children:
@@ -118,50 +120,82 @@ def depth_first(initial_state, goal_state):
 
 	return None
 
+def iterative_deepening(initial_state, goal_state):
+	visited = set()
+	fringe = []
+	limit = 0
+	goal_found = 0
+
+	while (1):
+		# push first node into queue
+		fringe.append(initial_state)
+		while(fringe):
+			# gets the LAST element in the fringe
+			current_node = fringe.pop()
+			# check if current node is goal
+			if (current_node == goal_state):
+				print("We found the goal")
+				path = solution(current_node, initial_state)
+				return path
+
+			if current_node not in visited:
+				visited.add(current_node)
+
+				# if the current level is less than the iterator
+				# we want to expand
+				if (current_node.level < limit):
+					valid_children = expand(current_node)
+					valid_children = list(reversed(valid_children))
+					for state in valid_children:
+						fringe.append(state)
+
+		visited.clear()
+		limit = limit + 1
+		
 def expand(current):
 	valid_children = []
 	if (current.boat == 'right'):
 		# print("expanding w/ boat on right")
 		# move one missionary
-		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left', current)
+		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left', current)
+		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
-		child = State(current.misRight, current.canRight - 1, current.misLeft, current.canLeft + 1, 'left', current)
+		child = State(current.misRight, current.canRight - 1, current.misLeft, current.canLeft + 1, 'left', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal and one missionary
-		child = State(current.misRight - 1, current.canRight - 1, current.misLeft + 1, current.canLeft + 1, 'left', current)
+		child = State(current.misRight - 1, current.canRight - 1, current.misLeft + 1, current.canLeft + 1, 'left', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two cannibals
-		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left', current)
+		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 	elif (current.boat == 'left'):
 		# print("expanding w/ boat on left")
 		# move one missionary
-		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right', current)
+		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right', current)
+		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
-		child = State(current.misRight, current.canRight + 1, current.misLeft, current.canLeft - 1, 'right', current)
+		child = State(current.misRight, current.canRight + 1, current.misLeft, current.canLeft - 1, 'right', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal and one missionary
-		child = State(current.misRight + 1, current.canRight + 1, current.misLeft - 1, current.canLeft - 1, 'right', current)
+		child = State(current.misRight + 1, current.canRight + 1, current.misLeft - 1, current.canLeft - 1, 'right', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two cannibals
-		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right', current)
+		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right', current, current.level + 1)
 		if (child.isValid()):
 			valid_children.append(child)
 
@@ -206,6 +240,8 @@ def main(args):
 		solutionPath = breadth_first(initial, goal)
 	elif mode == "dfs":
 		solutionPath = depth_first(initial, goal)
+	elif mode == 'iddfs':
+		solutionPath = iterative_deepening(initial, goal)
 
 	if solutionPath != None:
 		for step in solutionPath:
