@@ -8,21 +8,30 @@ class State(object):
 		self.canLeft = canLeft
 		self.boat = boat
 
+	def __repr__(self):
+		return "left bank: %s %s right bank: %s %s boat: %s" % (self.misLeft, self.canLeft, self.misRight, self.canRight, self.boat)
+
 	# Checks for a valid state.
 	# If missionaries are present on a bank, then there cannot be more missionaries
-	def isValid():
+	def isValid(self):
 		valid = False
 		# if there are missionaries on the right, and there are more cannibals
 		if (self.misRight > 0) and (self.misRight < self.canRight):
 			valid = False
 		# if there are missionaries on the left, and there are more cannibals
-		elif (self.misleft > 0) and (self.misLeft < self.canLeft):
+		elif (self.misLeft > 0) and (self.misLeft < self.canLeft):
 			valid = False
 		# if any of the values are negative
-		elif self.misLeft < 0 or self.canLeft < 0 or slef.misRight < 0 or self.canRight < 0:
+		elif self.misLeft < 0 or self.canLeft < 0 or self.misRight < 0 or self.canRight < 0:
 			valid = False
-		else
+		else:
 			valid = True
+			print(self)
+
+
+		return valid
+
+
 
 
 def load_data(file):
@@ -52,34 +61,6 @@ def load_data(file):
 
 	return state
 
-def main(args):
-	print (len(args))
-	# Ensure enough arguments are present
-	if len(args) != 5:
-		print ("Incorrect number of command lind arguments provided.")
-		print ("Usage: starting_state goal_state mode output_file")
-		return
-
-	# Save file name
-	starting_state = args[1]
-	goal_state = args[2]
-	mode = args[3]
-	output = args[4]
-
-	initial_state = load_data(starting_state)
-	goal_state = load_data(goal_state)
-
-	validModes = set(["bfs", "dfs", "iddfs", "astar"])
-	if mode not in validModes:
-		print ("Please specify a valid mode from ", validModes)
-		exit
-
-	print(left)
-	print(right)
-
-if __name__ == "__main__":
-	main(sys.argv)
-
 def breadth_first(initial_state, goal_state):
 	visited = set()
 	fringe = []
@@ -87,11 +68,13 @@ def breadth_first(initial_state, goal_state):
 	fringe.append(initial_state)
 	while(fringe):
 		# gets the first element in the fringe
-		current_node = fringe.remove()
+		current_node = fringe.pop(0)
 		# check if current node is goal
-		if (current_node == goal):
+		if (current_node == goal_state):
+			print("We found the goal")
 			return
 		if (current_node not in visited):
+			print("adding to visited")
 			visited.add(current_node)
 			#FIX THIS BOI
 			valid_children = expand(current_node)
@@ -99,12 +82,13 @@ def breadth_first(initial_state, goal_state):
 def expand(current):
 	valid_children = []
 	if (current.boat == 'right'):
+		print("expanding w/ boat on right")
 		# move one missionary
 		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left')
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left')
+		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left')
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
@@ -120,12 +104,13 @@ def expand(current):
 		if (child.isValid()):
 			valid_children.append(child)
 	elif (current.boat == 'left'):
+		print("expanding w/ boat on left")
 		# move one missionary
 		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right')
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right')
+		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right')
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
@@ -141,4 +126,35 @@ def expand(current):
 		if (child.isValid()):
 			valid_children.append(child)
 
+	# print(valid_children)
 	return valid_children
+
+def main(args):
+	print (len(args))
+	# Ensure enough arguments are present
+	if len(args) != 5:
+		print ("Incorrect number of command lind arguments provided.")
+		print ("Usage: starting_state goal_state mode output_file")
+		return
+
+	# Save file name
+	starting_state = args[1]
+	goal_state = args[2]
+	mode = args[3]
+	output = args[4]
+
+	initial = load_data(starting_state)
+	goal = load_data(goal_state)
+
+	validModes = set(["bfs", "dfs", "iddfs", "astar"])
+	if mode not in validModes:
+		print ("Please specify a valid mode from ", validModes)
+		exit
+
+	if mode == "bfs":
+		breadth_first(initial, goal)
+	# print(left)
+	# print(right)
+
+if __name__ == "__main__":
+	main(sys.argv)
