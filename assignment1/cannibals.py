@@ -1,15 +1,29 @@
 import sys
 
 class State(object):
-	def __init__(self, misRight, canRight, misLeft, canLeft, boat):
+	def __init__(self, misRight, canRight, misLeft, canLeft, boat, parent):
 		self.misRight = misRight
 		self.canRight = canRight
 		self.misLeft = misLeft
 		self.canLeft = canLeft
+		self.parent = parent
 		self.boat = boat
 
 	def __repr__(self):
 		return "left bank: %s %s right bank: %s %s boat: %s" % (self.misLeft, self.canLeft, self.misRight, self.canRight, self.boat)
+
+	def __eq__(self, other):
+		if self.misRight == other.misRight \
+		and self.misLeft == other.misLeft \
+		and self.canRight == other.canRight \
+		and self.canLeft == other.canLeft \
+		and self.boat == other.boat:
+			return True
+		else:
+			return False
+
+	def __hash__(self):
+		return id(self)
 
 	# Checks for a valid state.
 	# If missionaries are present on a bank, then there cannot be more missionaries
@@ -28,10 +42,7 @@ class State(object):
 			valid = True
 			print(self)
 
-
 		return valid
-
-
 
 
 def load_data(file):
@@ -55,9 +66,9 @@ def load_data(file):
 
 	# check boat position and create state
 	if (right_bank[2] == 1):
-		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'right')
+		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'right', None)
 	else:
-		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'left')
+		state = State(right_bank[0], right_bank[1], left_bank[0], left_bank[1], 'left', None)
 
 	return state
 
@@ -70,14 +81,18 @@ def breadth_first(initial_state, goal_state):
 		# gets the first element in the fringe
 		current_node = fringe.pop(0)
 		# check if current node is goal
+		print(current_node)
+		print(goal_state)
 		if (current_node == goal_state):
 			print("We found the goal")
 			return
-		if (current_node not in visited):
+		if current_node not in visited:
 			print("adding to visited")
 			visited.add(current_node)
-			#FIX THIS BOI
+
 			valid_children = expand(current_node)
+			for state in valid_children:
+				fringe.append(state)
 
 def expand(current):
 	valid_children = []
@@ -129,6 +144,18 @@ def expand(current):
 	# print(valid_children)
 	return valid_children
 
+def solution(finalState, initial):
+	currentState = finalState
+	path = []
+	path.append(finalState)
+	while currentState.parent != initial:
+		currentState = currentState.parent
+		path.insert(0, currentState)
+
+	for step in path:
+		print(step)
+	return path
+	
 def main(args):
 	print (len(args))
 	# Ensure enough arguments are present
