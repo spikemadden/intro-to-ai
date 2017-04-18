@@ -99,45 +99,45 @@ def expand(current):
 	if (current.boat == 'right'):
 		print("expanding w/ boat on right")
 		# move one missionary
-		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left')
+		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left')
+		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
-		child = State(current.misRight, current.canRight - 1, current.misLeft, current.canLeft + 1, 'left')
+		child = State(current.misRight, current.canRight - 1, current.misLeft, current.canLeft + 1, 'left', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal and one missionary
-		child = State(current.misRight - 1, current.canRight - 1, current.misLeft + 1, current.canLeft + 1, 'left')
+		child = State(current.misRight - 1, current.canRight - 1, current.misLeft + 1, current.canLeft + 1, 'left', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two cannibals
-		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left')
+		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 	elif (current.boat == 'left'):
 		print("expanding w/ boat on left")
 		# move one missionary
-		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right')
+		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right')
+		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
-		child = State(current.misRight, current.canRight + 1, current.misLeft, current.canLeft - 1, 'right')
+		child = State(current.misRight, current.canRight + 1, current.misLeft, current.canLeft - 1, 'right', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal and one missionary
-		child = State(current.misRight + 1, current.canRight + 1, current.misLeft - 1, current.canLeft - 1, 'right')
+		child = State(current.misRight + 1, current.canRight + 1, current.misLeft - 1, current.canLeft - 1, 'right', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two cannibals
-		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right')
+		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right', current_node)
 		if (child.isValid()):
 			valid_children.append(child)
 
