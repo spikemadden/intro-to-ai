@@ -85,7 +85,8 @@ def breadth_first(initial_state, goal_state):
 		print(goal_state)
 		if (current_node == goal_state):
 			print("We found the goal")
-			return
+			path = solution(current_node, initial_state)
+			return path
 		if current_node not in visited:
 			print("adding to visited")
 			visited.add(current_node)
@@ -94,50 +95,52 @@ def breadth_first(initial_state, goal_state):
 			for state in valid_children:
 				fringe.append(state)
 
+	return None
+
 def expand(current):
 	valid_children = []
 	if (current.boat == 'right'):
 		print("expanding w/ boat on right")
 		# move one missionary
-		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left', current_node)
+		child = State(current.misRight - 1, current.canRight, current.misLeft + 1, current.canLeft, 'left', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left', current_node)
+		child = State(current.misRight - 2, current.canRight, current.misLeft + 2, current.canLeft, 'left', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
-		child = State(current.misRight, current.canRight - 1, current.misLeft, current.canLeft + 1, 'left', current_node)
+		child = State(current.misRight, current.canRight - 1, current.misLeft, current.canLeft + 1, 'left', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal and one missionary
-		child = State(current.misRight - 1, current.canRight - 1, current.misLeft + 1, current.canLeft + 1, 'left', current_node)
+		child = State(current.misRight - 1, current.canRight - 1, current.misLeft + 1, current.canLeft + 1, 'left', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two cannibals
-		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left', current_node)
+		child = State(current.misRight, current.canRight - 2, current.misLeft, current.canLeft + 2, 'left', current)
 		if (child.isValid()):
 			valid_children.append(child)
 	elif (current.boat == 'left'):
 		print("expanding w/ boat on left")
 		# move one missionary
-		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right', current_node)
+		child = State(current.misRight + 1, current.canRight, current.misLeft - 1, current.canLeft, 'right', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two missionaries
-		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right', current_node)
+		child = State(current.misRight + 2, current.canRight, current.misLeft - 2, current.canLeft, 'right', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal
-		child = State(current.misRight, current.canRight + 1, current.misLeft, current.canLeft - 1, 'right', current_node)
+		child = State(current.misRight, current.canRight + 1, current.misLeft, current.canLeft - 1, 'right', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move one cannibal and one missionary
-		child = State(current.misRight + 1, current.canRight + 1, current.misLeft - 1, current.canLeft - 1, 'right', current_node)
+		child = State(current.misRight + 1, current.canRight + 1, current.misLeft - 1, current.canLeft - 1, 'right', current)
 		if (child.isValid()):
 			valid_children.append(child)
 		# move two cannibals
-		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right', current_node)
+		child = State(current.misRight, current.canRight + 2, current.misLeft, current.canLeft - 2, 'right', current)
 		if (child.isValid()):
 			valid_children.append(child)
 
@@ -152,10 +155,11 @@ def solution(finalState, initial):
 		currentState = currentState.parent
 		path.insert(0, currentState)
 
+	print("**** Printing Solution ****")
 	for step in path:
 		print(step)
 	return path
-	
+
 def main(args):
 	print (len(args))
 	# Ensure enough arguments are present
@@ -168,7 +172,7 @@ def main(args):
 	starting_state = args[1]
 	goal_state = args[2]
 	mode = args[3]
-	output = args[4]
+	output = open(args[4], 'w')
 
 	initial = load_data(starting_state)
 	goal = load_data(goal_state)
@@ -179,9 +183,13 @@ def main(args):
 		exit
 
 	if mode == "bfs":
-		breadth_first(initial, goal)
-	# print(left)
-	# print(right)
+		solutionPath = breadth_first(initial, goal)
+
+	if solutionPath != None:
+		for step in solutionPath:
+			print(step, file=output)
+	else:
+		print("No solution was found")
 
 if __name__ == "__main__":
 	main(sys.argv)
