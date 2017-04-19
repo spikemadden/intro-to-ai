@@ -1,4 +1,6 @@
 import sys
+import timeit
+import os
 
 class State(object):
 	def __init__(self, misRight, canRight, misLeft, canLeft, boat, parent, level):
@@ -151,7 +153,7 @@ def iterative_deepening(initial_state, goal_state):
 
 		visited.clear()
 		limit = limit + 1
-		
+
 def expand(current):
 	valid_children = []
 	if (current.boat == 'right'):
@@ -209,13 +211,12 @@ def solution(finalState, initial):
 		currentState = currentState.parent
 		path.insert(0, currentState)
 
-	print("**** Printing Solution ****")
-	for step in path:
-		print(step)
+	# print("**** Printing Solution ****")
+	# for step in path:
+	# 	print(step)
 	return path
 
 def main(args):
-	print (len(args))
 	# Ensure enough arguments are present
 	if len(args) != 5:
 		print ("Incorrect number of command lind arguments provided.")
@@ -238,16 +239,25 @@ def main(args):
 
 	if mode == "bfs":
 		solutionPath = breadth_first(initial, goal)
+		time = timeit.timeit(stmt="breadth_first(initial, goal)", setup="from __main__ import breadth_first, initial, goal", number=1)
 	elif mode == "dfs":
 		solutionPath = depth_first(initial, goal)
+		time = timeit.timeit(stmt="depth_first(initial, goal)", setup="from __main__ import depth_first, initial, goal", number=1)
 	elif mode == 'iddfs':
 		solutionPath = iterative_deepening(initial, goal)
+		time = timeit.timeit(stmt="iterative_deepening(initial, goal)", setup="from __main__ import iterative_deepening, initial, goal", number=1)
 
 	if solutionPath != None:
 		for step in solutionPath:
 			print(step, file=output)
+			print(step)
+		print("Time: " + str(time))
 	else:
 		print("No solution was found")
 
 if __name__ == "__main__":
+	starting_state = sys.argv[1]
+	goal_state = sys.argv[2]
+	initial = load_data(starting_state)
+	goal = load_data(goal_state)
 	main(sys.argv)
