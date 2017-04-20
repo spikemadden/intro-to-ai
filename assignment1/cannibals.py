@@ -1,6 +1,7 @@
 import sys
 import timeit
 import os
+import queue
 
 class State(object):
 	def __init__(self, misRight, canRight, misLeft, canLeft, boat, parent, level):
@@ -22,6 +23,12 @@ class State(object):
 		and self.canRight == other.canRight \
 		and self.canLeft == other.canLeft \
 		and self.boat == other.boat:
+			return True
+		else:
+			return False
+
+	def __lt__(self, other):
+		if self.misLeft < other.misLeft and self.canLeft < other.canLeft:
 			return True
 		else:
 			return False
@@ -154,6 +161,34 @@ def iterative_deepening(initial_state, goal_state):
 		visited.clear()
 		limit = limit + 1
 
+def astar(initial_state, goal_state):
+	visited = set()
+	fringe = queue.PriorityQueue()
+	fringe.put((getScore(initial_state, goal_state), initial_state))
+
+	while(fringe):
+		# Get the element from the top of the queue, that has the lowest priority
+		current_node = fringe.get()[1]
+		# check if current node is goal
+		if (current_node == goal_state):
+			print("We found the goal")
+			path = solution(current_node, initial_state)
+			return path
+
+		if(current_node not in visited):
+			visited.add(current_node)
+			valid_children = expand(current_node)
+			for state in valid_children:
+				fringe.put((getScore(state, goal_state), state))
+
+def getScore(cur, goal):
+	score = 0
+	# A lower score will mean that it is closer to the solution
+	score += goal.misLeft - cur.misLeft
+	score += goal.canLeft - cur.canLeft
+
+	return score
+
 def expand(current):
 	valid_children = []
 	if (current.boat == 'right'):
@@ -246,7 +281,9 @@ def main(args):
 	elif mode == 'iddfs':
 		solutionPath = iterative_deepening(initial, goal)
 		time = timeit.timeit(stmt="iterative_deepening(initial, goal)", setup="from __main__ import iterative_deepening, initial, goal", number=1)
-
+	elif mode == 'astar':
+		solutionPath = astar(initial, goal)
+		time = timeit.timeit(stmt="astar(initial, goal)", setup="from __main__ import astar, initial, goal", number=1)
 	if solutionPath != None:
 		for step in solutionPath:
 			print(step, file=output)
