@@ -1,3 +1,11 @@
+################################
+# Intro to AI - Assignment 1   #
+# McKenna Jones				   #
+# Spike Madden				   #
+################################
+
+# NOTE: This code only works with Python3
+
 import sys
 import timeit
 import os
