@@ -54,7 +54,6 @@ class State(object):
 
 		return valid
 
-
 def load_data(file):
 	left_bank = []
 	right_bank = []
@@ -133,7 +132,7 @@ def iterative_deepening(initial_state, goal_state):
 	goal_found = 0
 	nodes = 0
 
-	while (1):
+	while(len(visited) < 600):
 		# push first node into queue
 		fringe.append(initial_state)
 		while(fringe):
@@ -243,9 +242,6 @@ def solution(finalState, initial):
 		currentState = currentState.parent
 		path.insert(0, currentState)
 
-	# print("**** Printing Solution ****")
-	# for step in path:
-	# 	print(step)
 	return path
 
 def main(args):
