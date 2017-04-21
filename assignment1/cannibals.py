@@ -13,7 +13,6 @@ class State(object):
 		self.boat = boat
 		self.level = level
 
-
 	def __repr__(self):
 		return "left bank: %s %s right bank: %s %s boat: %s" % (self.misLeft, self.canLeft, self.misRight, self.canRight, self.boat)
 
@@ -93,9 +92,8 @@ def breadth_first(initial_state, goal_state):
 		current_node = fringe.pop(0)
 		# check if current node is goal
 		if (current_node == goal_state):
-			print("We found the goal")
 			path = solution(current_node, initial_state)
-			return path
+			return (path, len(visited))
 		if current_node not in visited:
 			visited.add(current_node)
 
@@ -115,9 +113,8 @@ def depth_first(initial_state, goal_state):
 		current_node = fringe.pop()
 		# check if current node is goal
 		if (current_node == goal_state):
-			print("We found the goal")
 			path = solution(current_node, initial_state)
-			return path
+			return (path, len(visited))
 
 		if current_node not in visited:
 			visited.add(current_node)
@@ -134,6 +131,7 @@ def iterative_deepening(initial_state, goal_state):
 	fringe = []
 	limit = 0
 	goal_found = 0
+	nodes = 0
 
 	while (1):
 		# push first node into queue
@@ -143,9 +141,8 @@ def iterative_deepening(initial_state, goal_state):
 			current_node = fringe.pop()
 			# check if current node is goal
 			if (current_node == goal_state):
-				print("We found the goal")
 				path = solution(current_node, initial_state)
-				return path
+				return (path, nodes)
 
 			if current_node not in visited:
 				visited.add(current_node)
@@ -158,6 +155,7 @@ def iterative_deepening(initial_state, goal_state):
 					for state in valid_children:
 						fringe.append(state)
 
+		nodes += len(visited)
 		visited.clear()
 		limit = limit + 1
 
@@ -171,9 +169,8 @@ def astar(initial_state, goal_state):
 		current_node = fringe.get()[1]
 		# check if current node is goal
 		if (current_node == goal_state):
-			print("We found the goal")
 			path = solution(current_node, initial_state)
-			return path
+			return (path, len(visited))
 
 		if(current_node not in visited):
 			visited.add(current_node)
@@ -273,18 +270,20 @@ def main(args):
 		exit
 
 	if mode == "bfs":
-		solutionPath = breadth_first(initial, goal)
+		(solutionPath, nodes) = breadth_first(initial, goal)
 		time = timeit.timeit(stmt="breadth_first(initial, goal)", setup="from __main__ import breadth_first, initial, goal", number=1)
 	elif mode == "dfs":
-		solutionPath = depth_first(initial, goal)
+		(solutionPath, nodes) = depth_first(initial, goal)
 		time = timeit.timeit(stmt="depth_first(initial, goal)", setup="from __main__ import depth_first, initial, goal", number=1)
 	elif mode == 'iddfs':
-		solutionPath = iterative_deepening(initial, goal)
+		(solutionPath, nodes) = iterative_deepening(initial, goal)
 		time = timeit.timeit(stmt="iterative_deepening(initial, goal)", setup="from __main__ import iterative_deepening, initial, goal", number=1)
 	elif mode == 'astar':
-		solutionPath = astar(initial, goal)
+		(solutionPath, nodes) = astar(initial, goal)
 		time = timeit.timeit(stmt="astar(initial, goal)", setup="from __main__ import astar, initial, goal", number=1)
 	if solutionPath != None:
+		print("Nodes visited: ", nodes)
+		print("Solution path:")
 		for step in solutionPath:
 			print(step, file=output)
 			print(step)
