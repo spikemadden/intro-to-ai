@@ -36,6 +36,13 @@ public:
      */
     virtual void get_move(OthelloBoard* b, int& col, int& row) = 0;
 
+	/**
+	This function takes the current board, and returns the "goodness"
+	The goodness is in regards to the maximizing player.
+	The maximizing player is whoever moves first.
+	**/
+	int utility(OthelloBoard* b);
+
     /**
      * @return A copy of the Player object
      * Virtual copy constructor

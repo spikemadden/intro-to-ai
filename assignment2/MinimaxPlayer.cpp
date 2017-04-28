@@ -19,8 +19,29 @@ MinimaxPlayer::~MinimaxPlayer() {
 
 }
 
+std::vector<OthelloBoard*> MinimaxPlayer::sucessor(OthelloBoard* b)
+{
+	std::vector<OthelloBoard*> validMoves;
+	char symb = get_symbol();
+
+	for(int row = 0; row < b->get_num_rows(); row++)
+	{
+		for(int col = 0; col < b->get_num_cols(); col++)
+		{
+			if(b->is_legal_move(col, row, symb))
+			{
+				OthelloBoard* temp = b;
+				temp->play_move(col, row, symb);
+				validMoves.push_back(temp);
+			}
+		}
+	}
+
+	return validMoves;
+}
+
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
-    // To be filled in by you
+	// To be filled in by you
 }
 
 MinimaxPlayer* MinimaxPlayer::clone() {
