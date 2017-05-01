@@ -91,7 +91,7 @@ public:
      * col and row. Then, any pieces sandwiched in between the two endpoints are flipped.
      */
     void play_move(int col, int row, char symbol);
-
+	
     /**
      * @return Returns the symbol for Player 1 (the maximizing player)'s pieces
      * Returns the symbol for Player 1's pieces

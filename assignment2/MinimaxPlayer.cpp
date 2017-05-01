@@ -6,6 +6,7 @@
  */
 #include <iostream>
 #include <assert.h>
+#include <algorithm>
 #include "MinimaxPlayer.h"
 
 using std::vector;
@@ -19,7 +20,7 @@ MinimaxPlayer::~MinimaxPlayer() {
 
 }
 
-std::vector<OthelloBoard*> MinimaxPlayer::sucessor(OthelloBoard* b)
+std::vector<OthelloBoard*> MinimaxPlayer::successor(OthelloBoard* b)
 {
 	std::vector<OthelloBoard*> validMoves;
 	char symb = get_symbol();
@@ -38,6 +39,46 @@ std::vector<OthelloBoard*> MinimaxPlayer::sucessor(OthelloBoard* b)
 	}
 
 	return validMoves;
+}
+
+int MinimaxPlayer::MaxValue(OthelloBoard* b)
+{
+	std::vector<OthelloBoard*> children;
+	std::vector<OthelloBoard*>::iterator iter;
+	if(!b->has_legal_moves_remaining(get_symbol()))
+	{
+		return utility(b);
+	}
+	// Slides say v should be initialized to -infinity???
+	int v =  0;
+	children = successor(b);
+
+	for(iter = children.begin(); iter != children.end(); iter++)
+	{
+		v = std::max(v, MinValue(*iter));
+	}
+
+	return v;
+}
+
+int MinimaxPlayer::MinValue(OthelloBoard* b)
+{
+	std::vector<OthelloBoard*> children;
+	std::vector<OthelloBoard*>::iterator iter;
+	if(!b->has_legal_moves_remaining(get_symbol()))
+	{
+		return utility(b);
+	}
+
+	int v = 0;
+	children = successor(b);
+
+	for(iter = children.begin(); iter != children.end(); iter++)
+	{
+		v = std::min(v, MaxValue(*iter));
+	}
+
+	return v;
 }
 
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {

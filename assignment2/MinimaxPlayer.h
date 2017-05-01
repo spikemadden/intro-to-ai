@@ -41,7 +41,10 @@ public:
 	an array of all successors that can be reached in
 	one move
 	*/
-	std::vector<OthelloBoard*> sucessor(OthelloBoard* b);
+	std::vector<OthelloBoard*> successor(OthelloBoard* b);
+
+	int MaxValue(OthelloBoard* b);
+	int MinValue(OthelloBoard* b);
     /**
      * @return A copy of the MinimaxPlayer object
      * This is a virtual copy constructor
