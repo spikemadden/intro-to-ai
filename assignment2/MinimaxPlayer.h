@@ -36,23 +36,12 @@ public:
 	 */
     void get_move(OthelloBoard* b, int& col, int& row);
 
-	/*
-	The function takes the current board and returns
-	an array of all successors that can be reached in
-	one move
-	*/
-	std::vector<OthelloBoard> successor(OthelloBoard b);
-
-	int MaxValue(OthelloBoard b);
-	int MinValue(OthelloBoard b);
-	OthelloBoard* MiniMaxDecision(OthelloBoard *b);
     /**
      * @return A copy of the MinimaxPlayer object
      * This is a virtual copy constructor
      */
     MinimaxPlayer* clone();
 
-	OthelloBoard* currentBestMove;
 private:
 
 };
