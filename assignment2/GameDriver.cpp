@@ -68,10 +68,12 @@ void GameDriver::process_move(Player* curr_player, Player* opponent) {
 	int col = -1;
 	int row = -1;
 	bool invalid_move = true;
-	while (invalid_move) {
+	int moves = 0;
+	while (invalid_move && moves < 5) {
 		curr_player->get_move(board, col, row);
 		if (!board->is_legal_move(col, row, curr_player->get_symbol())) {
 			std::cout << "Invalid move.\n";
+			moves++;
 			continue;
 		} else {
 			std::cout << "Selected move: col = " << col << ", row = " << row << std::endl;
@@ -97,7 +99,7 @@ void GameDriver::run() {
 	} else {
 	    std::cout << "Can't move\n";
 	    if( cant_move_counter == 1 ) {
-		// Both players can't move, game over                       
+		// Both players can't move, game over
 		break;
 	    } else {
 		cant_move_counter++;

@@ -8,13 +8,13 @@ Player::~Player() {
 
 }
 
-int Player::utility(OthelloBoard* b)
+int Player::utility(OthelloBoard b)
 {
-	char p1Symbol = b->get_p1_symbol();
-	char p2Symbol = b->get_p2_symbol();
+	char p1Symbol = b.get_p1_symbol();
+	char p2Symbol = b.get_p2_symbol();
 
-	int p1Score = b->count_score(p1Symbol);
-	int p2Score = b->count_score(p2Symbol);
+	int p1Score = b.count_score(p1Symbol);
+	int p2Score = b.count_score(p2Symbol);
 
 	int goodness = 0;
 	if(p1Score > p2Score)

@@ -41,7 +41,7 @@ public:
 	The goodness is in regards to the maximizing player.
 	The maximizing player is whoever moves first.
 	**/
-	int utility(OthelloBoard* b);
+	int utility(OthelloBoard b);
 
     /**
      * @return A copy of the Player object
