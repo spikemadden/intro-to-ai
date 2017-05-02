@@ -19,6 +19,23 @@ MinimaxPlayer::~MinimaxPlayer() {
 
 }
 
+int MinimaxPlayer::utility(OthelloBoard* b) {
+
+}
+
+std::vector<OthelloBoard*> Minimax::successors(OthelloBoard* b) {
+
+}
+
+int MinimaxPlayer::max_value(OthelloBoard* b) {
+
+}
+
+int MinimaxPlyaer::min_value(OthelloBoard* b) {
+
+}
+
+
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
     // To be filled in by you
 }
