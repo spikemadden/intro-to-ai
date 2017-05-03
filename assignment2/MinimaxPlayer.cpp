@@ -13,62 +13,49 @@ using std::vector;
 
 MinimaxPlayer::MinimaxPlayer(char symb) :
 		Player(symb) {
-
 }
 
 MinimaxPlayer::~MinimaxPlayer() {
 
 }
 
-std::vector<OthelloBoard> MinimaxPlayer::successor(OthelloBoard b)
+std::vector<MinimaxPlayer::TreeNode> MinimaxPlayer::successor(OthelloBoard b, char symb)
 {
-	std::vector<OthelloBoard> validMoves;
-	char symb = get_symbol();
+	std::vector<MinimaxPlayer::TreeNode> validMoves;
 
 	for(int row = 0; row < b.get_num_rows(); row++)
 	{
 		for(int col = 0; col < b.get_num_cols(); col++)
 		{
-			if(b.is_legal_move(col, row, symb))
+			if(b.is_legal_move(col, row, symb) && b.is_cell_empty(col, row))
 			{
 				OthelloBoard temp = b;
-
 				temp.play_move(col, row, symb);
-				validMoves.push_back(temp);
+				TreeNode toAdd = {col, row, temp};
+				validMoves.push_back(toAdd);
 			}
 		}
 	}
-	std::vector<OthelloBoard>::iterator iter;
-	for(iter = validMoves.begin(); iter != validMoves.end(); iter++)
-	{
-		(*iter).display();
-	}
-
 	return validMoves;
 }
 
 int MinimaxPlayer::MaxValue(OthelloBoard b)
 {
-	std::vector<OthelloBoard> children;
-	std::vector<OthelloBoard>::iterator iter;
-	if(!b.has_legal_moves_remaining(b.get_p1_symbol()))
+	std::vector<TreeNode> children;
+	if(GameOver(b))
 	{
 		return utility(b);
 	}
-	// Slides say v should be initialized to -infinity???
-	int v =  -100;
-	children = successor(b);
-	printf("(got successors in Max)\n");
-	for(iter = children.begin(); iter != children.end(); iter++)
-	{
-		// (*iter).display();
-		int min = MinValue(*iter);
 
-		if(min > v)
-		{
-			v = std::max(v, min);
-			*currentBestMove = (*iter);
-		}
+	int v = -9999;
+
+	// p1 is always maximizing
+	char symb = b.get_p1_symbol();
+	children = successor(b, symb);
+
+	for(int i = 0; i < children.size(); i++)
+	{
+		v = std::max(v, MinValue(children[i].b));
 	}
 
 	return v;
@@ -76,62 +63,83 @@ int MinimaxPlayer::MaxValue(OthelloBoard b)
 
 int MinimaxPlayer::MinValue(OthelloBoard b)
 {
-	std::vector<OthelloBoard> children;
-	std::vector<OthelloBoard>::iterator iter;
-	if(!b.has_legal_moves_remaining(b.get_p2_symbol()))
+	std::vector<TreeNode> children;
+	if(GameOver(b))
 	{
 		return utility(b);
 	}
 
-	int v = 100;
-	children = successor(b);
+	int v = 9999;
 
-	for(iter = children.begin(); iter != children.end(); iter++)
+	// p2 is always minimizing
+	char symb = b.get_p1_symbol();
+	children = successor(b, symb);
+
+	for(int i = 0; i < children.size(); i++)
 	{
-		int max = MaxValue(*iter);
-
-		if(max < v)
-		{
-			v = std::min(v, max);
-			*currentBestMove = (*iter);
-		}
+		v = std::min(v, MaxValue(children[i].b));
 	}
 
 	return v;
 }
 
-OthelloBoard* MinimaxPlayer::MiniMaxDecision(OthelloBoard* b)
-{
-	MaxValue(*b);
-
-	return currentBestMove;
-}
-
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
-	OthelloBoard* initial = b;
-	OthelloBoard* miniMax = MiniMaxDecision(b);
-	// b->display();
-	//miniMax->display();
-	printf("(Got minimax decision)\n");
-	char symbol = get_symbol();
+	TreeNode bestBoard = {-1, -1, *b};
+	int minBest = 9999;
+	int maxBest = -9999;
 
-	// find the move
-	for(int curRow = 0; curRow < b->get_num_rows(); curRow++)
+	// Get first level of successors here.
+	std::vector<TreeNode> children = successor(*b, get_symbol());
+
+	for(int i = 0; i < children.size(); i++)
 	{
-		for(int curCol = 0; curCol < b->get_num_cols(); curCol++)
-		{
-			// printf("%c\n", initial->get_cell(curCol, curRow));
-			// printf("%c\n", miniMax->get_cell(curCol, curRow));
-
-			// printf("%s %s\n", initial->get_cell(curCol, curRow), miniMax->get_cell(curCol, curRow));
-			if(initial->get_cell(curCol, curRow) != miniMax->get_cell(curCol, curRow))
+		// if(b->get_p1_symbol() == get_symbol())
+		// {
+		// 	int v = MinValue(children[i].b);
+		// 	// printf("%d > %d\n", v, maxBest);
+		// 	if(v > maxBest)
+		// 	{
+		// 		printf("Updating max best\n");
+		// 		maxBest = v;
+		// 		bestBoard = children[i];
+		// 	}
+		// 	// bestBoard.b.display();
+		// }
+		// else
+		// {
+			int v = MaxValue(children[i].b);
+			// printf("%d < %d\n", v, minBest);
+			if(v < minBest)
 			{
-				col = curCol;
-				row = curRow;
-				return;
-			}
+				printf("Updating min best\n");
+				minBest = v;
+				bestBoard = children[i];
+				// bestBoard.b.display();
+			// }
 		}
 	}
+	col = bestBoard.col;
+	row = bestBoard.row;
+}
+
+bool MinimaxPlayer::GameOver(OthelloBoard b)
+{
+	if(!b.has_legal_moves_remaining(b.get_p2_symbol()) && !b.has_legal_moves_remaining(b.get_p1_symbol()))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int MinimaxPlayer::utility(OthelloBoard b)
+{
+	int p1Score = b.count_score(b.get_p1_symbol());
+	int p2Score = b.count_score(b.get_p2_symbol());
+
+	return p1Score - p2Score;
 }
 
 MinimaxPlayer* MinimaxPlayer::clone() {

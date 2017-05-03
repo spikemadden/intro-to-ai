@@ -37,24 +37,51 @@ public:
     void get_move(OthelloBoard* b, int& col, int& row);
 
 	/*
-	The function takes the current board and returns
-	an array of all successors that can be reached in
-	one move
+	A helper struct that contains a board, and the column and row
+	of the latest move
 	*/
-	std::vector<OthelloBoard> successor(OthelloBoard b);
+	struct TreeNode
+	{
+		int col;
+		int row;
+		OthelloBoard b;
+	};
 
-	int MaxValue(OthelloBoard b);
-	int MinValue(OthelloBoard b);
-	OthelloBoard* MiniMaxDecision(OthelloBoard *b);
     /**
      * @return A copy of the MinimaxPlayer object
      * This is a virtual copy constructor
      */
     MinimaxPlayer* clone();
-
-	OthelloBoard* currentBestMove;
 private:
+	/*
+	The function takes the current board and returns
+	an vector of TreeNodes containing all successors that can be reached in
+	one move
+	*/
+	std::vector<TreeNode> successor(OthelloBoard b, char symb);
 
+	/*
+	The maximizing function. Returns the MaxValue of a board.
+	*/
+	int MaxValue(OthelloBoard b);
+
+	/*
+	The miimizing function. Returns the MaxValue of a board.
+	*/
+	int MinValue(OthelloBoard b);
+
+	/**
+	This function takes the current board, and returns the "goodness"
+	The goodness is in regards to the maximizing player.
+	The maximizing player is whoever moves first.
+	**/
+	int utility(OthelloBoard b);
+
+	/*
+	Determines if a board is in a end state.
+	It is if neither player can make a move
+	*/
+	bool GameOver(OthelloBoard b);
 };
 
 
