@@ -72,7 +72,7 @@ int MinimaxPlayer::MinValue(OthelloBoard b)
 	int v = 9999;
 
 	// p2 is always minimizing
-	char symb = b.get_p1_symbol();
+	char symb = b.get_p2_symbol();
 	children = successor(b, symb);
 
 	for(int i = 0; i < children.size(); i++)
@@ -93,29 +93,25 @@ void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
 
 	for(int i = 0; i < children.size(); i++)
 	{
-		// if(b->get_p1_symbol() == get_symbol())
-		// {
-		// 	int v = MinValue(children[i].b);
-		// 	// printf("%d > %d\n", v, maxBest);
-		// 	if(v > maxBest)
-		// 	{
-		// 		printf("Updating max best\n");
-		// 		maxBest = v;
-		// 		bestBoard = children[i];
-		// 	}
-		// 	// bestBoard.b.display();
-		// }
-		// else
-		// {
+		if(b->get_p1_symbol() == get_symbol())
+		{
+			int v = MinValue(children[i].b);
+			if(v > maxBest)
+			{
+				maxBest = v;
+				bestBoard = children[i];
+			}
+		}
+		// For the puroses of testing this assignment
+		// we will always end up in this block
+		else
+		{
 			int v = MaxValue(children[i].b);
-			// printf("%d < %d\n", v, minBest);
 			if(v < minBest)
 			{
-				printf("Updating min best\n");
 				minBest = v;
 				bestBoard = children[i];
-				// bestBoard.b.display();
-			// }
+			}
 		}
 	}
 	col = bestBoard.col;
