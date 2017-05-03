@@ -20,8 +20,7 @@ MinimaxPlayer::~MinimaxPlayer() {
 }
 
 int MinimaxPlayer::utility(OthelloBoard b) {
-
-	return b.count_score(b.get_p1_symbol()) - b.count_score(b.get_p2_symbol());
+	return (b.count_score(b.get_p1_symbol()) - b.count_score(b.get_p2_symbol()));
 }
 
 std::vector<OthelloBoard> MinimaxPlayer::successor(OthelloBoard b, char symbol) {
@@ -49,47 +48,51 @@ std::vector<OthelloBoard> MinimaxPlayer::successor(OthelloBoard b, char symbol) 
 	return validMoves;
 }
 
-int MinimaxPlayer::max_value(OthelloBoard b, int& col, int& row) {
+int MinimaxPlayer::max_value(OthelloBoard b) {
 
 	if(!b.has_legal_moves_remaining(b.get_p2_symbol()) && !b.has_legal_moves_remaining(b.get_p1_symbol())) {
 		return utility(b);
 	}
 
 	std::vector<OthelloBoard> children;
-	std::vector<OthelloBoard>::iterator iter;
 
-	int maximum = -10000;
-	int max_row = 0;
-	int max_col = 0;
+	int maximum = -100;
 
 	char symbol = b.get_p1_symbol();
 	children = successor(b, symbol);
 
-	for(iter = children.begin(); iter != children.end(); iter++) {
-		maximum = std::max(maximum, min_value(*iter, col, row));
+	// if (children.empty()) {
+	// 	return utility(b);
+	// }
+
+	for(int i = 0; i < children.size(); i++) {
+		maximum = std::max(maximum, min_value(children[i]));
 	}
 
 	return maximum;
 }
 
-int MinimaxPlayer::min_value(OthelloBoard b, int& col, int& row) {
+int MinimaxPlayer::min_value(OthelloBoard b) {
 
 	if(!b.has_legal_moves_remaining(b.get_p2_symbol()) && !b.has_legal_moves_remaining(b.get_p1_symbol())) {
 		return utility(b);
 	}
 
 	std::vector<OthelloBoard> children;
-	std::vector<OthelloBoard>::iterator iter;
 
-	int minimum = 10000;
+	int minimum = 100;
 	int min_row = 0;
 	int min_col = 0;
 
 	char symbol = b.get_p2_symbol();
 	children = successor(b, symbol);
 
-	for(iter = children.begin(); iter != children.end(); iter++) {
-		minimum = std::min(minimum, max_value(*iter, col, row));
+	// if (children.empty()) {
+	// 	return utility(b);
+	// }
+
+	for(int i = 0; i < children.size(); i++) {
+		minimum = std::min(minimum, max_value(children[i]));
 	}
 
 	return minimum;
@@ -99,12 +102,12 @@ void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
     int best_row = -1;
 		int best_col = -1;
 
-		int best_min = 10000;
+		int best_min = 100;
 
 		std::vector<OthelloBoard> first_children = successor(*b, get_symbol());
 
 		for (int i = 0; i < first_children.size(); i++) {
-			int value = max_value(first_children[i], col, row);
+			int value = max_value(first_children[i]);
 			if (value < best_min) {
 				best_min = value;
 				best_row = first_children[i].get_row();
