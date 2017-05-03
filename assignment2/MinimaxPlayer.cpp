@@ -30,7 +30,7 @@ std::vector<OthelloBoard> MinimaxPlayer::successor(OthelloBoard b, char symbol) 
 
 	for(int row = 0; row < b.get_num_rows(); row++) {
 		for(int col = 0; col < b.get_num_cols(); col++) {
-			if(b.is_legal_move(col, row, symbol)) {
+			if(b.is_legal_move(col, row, symbol) && b.is_cell_empty(col, row)) {
 				OthelloBoard temp = b;
 				temp.play_move(col, row, symbol);
 				temp.set_row(row);
@@ -40,16 +40,20 @@ std::vector<OthelloBoard> MinimaxPlayer::successor(OthelloBoard b, char symbol) 
 		}
 	}
 
-	std::vector<OthelloBoard>::iterator iter;
-	for(iter = validMoves.begin(); iter != validMoves.end(); iter++)
-	{
-		(*iter).display();
-	}
+	// std::vector<OthelloBoard>::iterator iter;
+	// for(iter = validMoves.begin(); iter != validMoves.end(); iter++)
+	// {
+	// 	(*iter).display();
+	// }
 
 	return validMoves;
 }
 
-int MinimaxPlayer::max_value(OthelloBoard b, char symbol, int& col, int& row) {
+int MinimaxPlayer::max_value(OthelloBoard b, int& col, int& row) {
+
+	if(!b.has_legal_moves_remaining(b.get_p2_symbol()) && !b.has_legal_moves_remaining(b.get_p1_symbol())) {
+		return utility(b);
+	}
 
 	std::vector<OthelloBoard> children;
 	std::vector<OthelloBoard>::iterator iter;
@@ -58,27 +62,21 @@ int MinimaxPlayer::max_value(OthelloBoard b, char symbol, int& col, int& row) {
 	int max_row = 0;
 	int max_col = 0;
 
+	char symbol = b.get_p1_symbol();
 	children = successor(b, symbol);
 
-	if (children.empty()) {
-		return utility(b);
-	}
-
 	for(iter = children.begin(); iter != children.end(); iter++) {
-		int score = std::max(maximum, min_value(*iter, symbol, col, row));
-		if (score > maximum) {
-			maximum = score;
-			max_row = (*iter).get_row();
-			max_col = (*iter).get_col();
-		}
+		maximum = std::max(maximum, min_value(*iter, col, row));
 	}
 
-	row = max_row;
-	col = max_col;
 	return maximum;
 }
 
-int MinimaxPlayer::min_value(OthelloBoard b, char symbol, int& col, int& row) {
+int MinimaxPlayer::min_value(OthelloBoard b, int& col, int& row) {
+
+	if(!b.has_legal_moves_remaining(b.get_p2_symbol()) && !b.has_legal_moves_remaining(b.get_p1_symbol())) {
+		return utility(b);
+	}
 
 	std::vector<OthelloBoard> children;
 	std::vector<OthelloBoard>::iterator iter;
@@ -87,35 +85,35 @@ int MinimaxPlayer::min_value(OthelloBoard b, char symbol, int& col, int& row) {
 	int min_row = 0;
 	int min_col = 0;
 
+	char symbol = b.get_p2_symbol();
 	children = successor(b, symbol);
 
-	if(children.empty()) {
-		return utility(b);
-	}
-
 	for(iter = children.begin(); iter != children.end(); iter++) {
-		int score = std::min(minimum, max_value(*iter, symbol, col, row));
-		if (score < minimum) {
-			minimum = score;
-			min_row = (*iter).get_row();
-			min_col = (*iter).get_col();
-		}
+		minimum = std::min(minimum, max_value(*iter, col, row));
 	}
 
-	row = min_row;
-	col = min_col;
 	return minimum;
 }
 
 void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
-    // To be filled in by you
-		if (symbol == b->get_p1_symbol()) {
-			max_value(*b, 'X', col, row);
+    int best_row = -1;
+		int best_col = -1;
+
+		int best_min = 10000;
+
+		std::vector<OthelloBoard> first_children = successor(*b, get_symbol());
+
+		for (int i = 0; i < first_children.size(); i++) {
+			int value = max_value(first_children[i], col, row);
+			if (value < best_min) {
+				best_min = value;
+				best_row = first_children[i].get_row();
+				best_col = first_children[i].get_col();
+			}
 		}
 
-		else if (symbol == b->get_p2_symbol()) {
-			max_value(*b, 'O', col, row);
-		}
+		row = best_row;
+		col = best_col;
 }
 
 MinimaxPlayer* MinimaxPlayer::clone() {
