@@ -29,10 +29,10 @@ public:
 	 */
 	virtual ~MinimaxPlayer();
 
-	int utility(OthelloBoard*);
-	std::vector<OthelloBoard*> successors(OthelloBoard*);
-	int max_value(OthelloBoard* b);
-	int min_value(OthelloBoard* b);
+	int utility(OthelloBoard);
+	std::vector<OthelloBoard> successor(OthelloBoard b, char symbol);
+	int max_value(OthelloBoard b, char symbol, int& col, int& row);
+	int min_value(OthelloBoard b, char symbol, int& col, int& row);
 
 	/**
 	 * @param b The board object for the current state of the board
