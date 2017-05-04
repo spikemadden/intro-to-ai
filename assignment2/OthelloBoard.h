@@ -104,11 +104,13 @@ public:
      */
     char get_p2_symbol() { return p2_symbol; }
 
+		int get_row() { return row; }
+		int get_col() { return col; }
+
 		void set_row(int r) { row = r; }
 		void set_col(int c) { col = c; }
 
-		int get_row() { return row; }
-		int get_col() { return col; }
+
 
 private:
 

@@ -30,7 +30,7 @@ public:
 	virtual ~MinimaxPlayer();
 
 	int utility(OthelloBoard);
-	std::vector<OthelloBoard> successor(OthelloBoard b, char symbol);
+	std::vector<OthelloBoard*> successor(OthelloBoard b, char symbol);
 	int max_value(OthelloBoard b);
 	int min_value(OthelloBoard b);
 
