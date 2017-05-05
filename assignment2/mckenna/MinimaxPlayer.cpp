@@ -47,6 +47,7 @@ int MinimaxPlayer::MaxValue(OthelloBoard b)
 		return utility(b);
 	}
 
+	// Initalize v to "neg inifinity"
 	int v = -9999;
 
 	// p1 is always maximizing
@@ -69,6 +70,7 @@ int MinimaxPlayer::MinValue(OthelloBoard b)
 		return utility(b);
 	}
 
+	// Initalize v to "pos inifinity"
 	int v = 9999;
 
 	// p2 is always minimizing
@@ -114,6 +116,8 @@ void MinimaxPlayer::get_move(OthelloBoard* b, int& col, int& row) {
 			}
 		}
 	}
+
+	// play the col and row from the bestBoard
 	col = bestBoard.col;
 	row = bestBoard.row;
 }
