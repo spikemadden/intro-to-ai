@@ -1,17 +1,72 @@
+from __future__ import division
 import sys
 import os
 import string
+
+
 
 # NOTE: Python 2 :)
 
 def getVocab(data):
 	result = set()
 	for line in data:
-		temp = line.split()
-		for word in temp:
+		for word in line:
 			result.add(word)
 
 	return sorted(result)
+
+
+def assign_vocab_probabilities(vocab, training, truth):
+
+	true_records = 0
+	false_records = 0
+
+	for value in truth:
+		if value == 1:
+			true_records += 1
+		else:
+			false_records += 1
+
+	result = {}
+
+	for index, entry in enumerate(vocab):
+
+		true_true_word_count = 0
+		false_true_word_count = 0
+
+		false_false_word_count = 0
+		true_false_word_count = 0
+
+		for sentence in training:
+
+			if sentence[index] == 1:
+				if sentence[-1] == 1:
+					true_true_word_count += 1
+				else:
+					true_false_word_count += 1
+			else:
+				if sentence[-1] == 1:
+					false_true_word_count += 1
+				else:
+					false_false_word_count += 1
+
+
+		probabilities = (true_true_word_count/true_records, false_true_word_count/true_records, false_false_word_count/false_records, true_false_word_count/false_records)
+
+		result[entry] = probabilities
+
+	print(result)
+	return result, (true_records / len(truth), false_records / len(truth))
+
+def testing_phase(sentences, trained_vocab, probabilities):
+	result = []
+
+	# prob_class_true = probabilities[0]
+	# prob_class_false = probabilities[1]
+	#
+	# for sentence in sentences:
+
+
 
 def getData(fileName):
 	data = []
@@ -23,7 +78,7 @@ def getData(fileName):
 	for line in training:
 		temp = line.split('\t')
 
-		data.append(temp[0].translate(None, deleteChars).lower())
+		data.append(temp[0].translate(None, deleteChars).lower().split())
 		dataTruth.append(temp[1].strip())
 
 	dataTruth = list(map(int, dataTruth))
@@ -34,8 +89,7 @@ def buildFeatureVector(vocab, sentences, truth):
 
 	truthIndex = 0
 
-	for s in sentences:
-		sentence = s.split()
+	for sentence in sentences:
 		# feature vector of size M+1, where M is the size of the vocab
 		temp = [0 for _ in range(len(vocab))]
 		for word in sentence:
@@ -68,13 +122,19 @@ def outputPreprocess(vocab, train, test):
 	testFile.write("classlabel\n")
 
 	for feature in train:
-		for i in feature:
-			trainFile.write(str(i) + ",")
+		for idx, i in enumerate(feature):
+			if idx == len(feature) - 1:
+				trainFile.write(str(i))
+			else:
+				trainFile.write(str(i) + ",")
 		trainFile.write("\n")
 
 	for feature in test:
-		for i in feature:
-			testFile.write(str(i) + ",")
+		for idx, i in enumerate(feature):
+			if idx == len(feature) - 1:
+				testFile.write(str(i))
+			else:
+				testFile.write(str(i) + ",")
 		testFile.write("\n")
 
 def main(args):
@@ -96,7 +156,17 @@ def main(args):
 
 	testing = buildFeatureVector(vocab, testingSentences, testingTruth)
 
+
+
+
+
 	outputPreprocess(vocab, training, testing)
+
+
+
+	trained_vocab = assign_vocab_probabilities(vocab, training, trainingTruth)
+	#
+	print trained_vocab
 
 if __name__ == "__main__":
 	main(sys.argv)
