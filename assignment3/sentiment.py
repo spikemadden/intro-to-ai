@@ -51,22 +51,53 @@ def assign_vocab_probabilities(vocab, training, truth):
 					false_false_word_count += 1
 
 
-		probabilities = (true_true_word_count/true_records, false_true_word_count/true_records, false_false_word_count/false_records, true_false_word_count/false_records)
+		probabilities = (true_true_word_count/true_records, false_true_word_count/true_records, true_false_word_count/false_records, false_false_word_count/false_records)
 
 		result[entry] = probabilities
 
-	print(result)
+	# print(result)
 	return result, (true_records / len(truth), false_records / len(truth))
 
-def testing_phase(sentences, trained_vocab, probabilities):
+def testing_phase(sentences, trained_vocab, probabilities, vocab):
 	result = []
 
-	# prob_class_true = probabilities[0]
-	# prob_class_false = probabilities[1]
-	#
-	# for sentence in sentences:
+	prob_class_true = probabilities[0]
+	prob_class_false = probabilities[1]
+	print(prob_class_true, prob_class_false)
+	for sentence in sentences:
+		prob_true = prob_class_true
+		for index, word in enumerate(sentence):
+			if vocab[index] in trained_vocab:
+				# print("hello?")
+				if word == 1:
+					prob_true *= trained_vocab[vocab[index]][0]
+				else:
+					prob_true *= trained_vocab[vocab[index]][1]
 
+		prob_false = prob_class_false
+		for index, word in enumerate(sentence):
+			if vocab[index] in trained_vocab:
+				if word == 1:
+					prob_false *= trained_vocab[vocab[index]][2]
+				else:
+					prob_false *= trained_vocab[vocab[index]][3]
 
+		# print(prob_true, prob_false)
+		if prob_true >= prob_false:
+			result.append(1)
+		else:
+			result.append(0)
+
+	return result
+
+def check_accuracy(calculated_truth, real_truth):
+	correct = 0
+
+	for i in range(len(real_truth)):
+		if calculated_truth[i] == real_truth[i]:
+			correct += 1
+
+	return correct / len(real_truth)
 
 def getData(fileName):
 	data = []
@@ -156,17 +187,20 @@ def main(args):
 
 	testing = buildFeatureVector(vocab, testingSentences, testingTruth)
 
-
-
-
-
 	outputPreprocess(vocab, training, testing)
 
+	trained_vocab, (p_class_1, p_class_0) = assign_vocab_probabilities(vocab, training, trainingTruth)
+	# print trained_vocab
 
+	training_classification = testing_phase(training, trained_vocab, (p_class_1, p_class_0), vocab)
+	print(training_classification)
+	print(trainingTruth)
+	testing_classification = testing_phase(testing, trained_vocab, (p_class_1, p_class_0), vocab)
 
-	trained_vocab = assign_vocab_probabilities(vocab, training, trainingTruth)
-	#
-	print trained_vocab
+	result1 = check_accuracy(training_classification, trainingTruth)
+	result2 = check_accuracy(testing_classification, testingTruth)
+
+	print(result1, result2)
 
 if __name__ == "__main__":
 	main(sys.argv)
