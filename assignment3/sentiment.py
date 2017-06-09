@@ -55,7 +55,6 @@ def assign_vocab_probabilities(vocab, training, truth):
 
 		result[entry] = probabilities
 
-	# print(result)
 	return result, (true_records / len(truth), false_records / len(truth))
 
 def testing_phase(sentences, trained_vocab, probabilities, vocab):
@@ -63,12 +62,11 @@ def testing_phase(sentences, trained_vocab, probabilities, vocab):
 
 	prob_class_true = probabilities[0]
 	prob_class_false = probabilities[1]
-	print(prob_class_true, prob_class_false)
+
 	for sentence in sentences:
 		prob_true = prob_class_true
 		for index, word in enumerate(sentence):
 			if vocab[index] in trained_vocab:
-				# print("hello?")
 				if word == 1:
 					prob_true *= trained_vocab[vocab[index]][0]
 				else:
@@ -82,7 +80,6 @@ def testing_phase(sentences, trained_vocab, probabilities, vocab):
 				else:
 					prob_false *= trained_vocab[vocab[index]][3]
 
-		# print(prob_true, prob_false)
 		if prob_true >= prob_false:
 			result.append(1)
 		else:
@@ -190,17 +187,21 @@ def main(args):
 	outputPreprocess(vocab, training, testing)
 
 	trained_vocab, (p_class_1, p_class_0) = assign_vocab_probabilities(vocab, training, trainingTruth)
-	# print trained_vocab
 
 	training_classification = testing_phase(training, trained_vocab, (p_class_1, p_class_0), vocab)
-	print(training_classification)
-	print(trainingTruth)
+
 	testing_classification = testing_phase(testing, trained_vocab, (p_class_1, p_class_0), vocab)
 
 	result1 = check_accuracy(training_classification, trainingTruth)
 	result2 = check_accuracy(testing_classification, testingTruth)
 
-	print(result1, result2)
+	# output results
+	output = open('results.txt', 'w')
+	output.write("Training Set (training, training): ")
+	output.write(str(result1) + '\n')
+	output.write("Testing Set (training, testing): ")
+	output.write(str(result2) + '\n')
+
 
 if __name__ == "__main__":
 	main(sys.argv)

@@ -1,0 +1,2 @@
+Training Set (training, training): 1.0
+Testing Set (training, testing): 0.816901408451
